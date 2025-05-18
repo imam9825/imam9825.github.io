@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Girlfriend?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #ffebee;
+            color: #d81b60;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .page {
+            display: none;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            min-height: 100vh;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .page.active {
+            display: flex;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-yes {
+            background-color: #d81b60;
+            color: white;
+            box-shadow: 0 4px 8px rgba(216, 27, 96, 0.3);
+        }
+        
+        .btn-yes:hover {
+            background-color: #c2185b;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(216, 27, 96, 0.4);
+        }
+        
+        .btn-no {
+            background-color: #f8bbd0;
+            color: #d81b60;
+            box-shadow: 0 4px 8px rgba(248, 187, 208, 0.3);
+        }
+        
+        .btn-no:hover {
+            background-color: #f48fb1;
+        }
+        
+        .heart {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0;
+            font-size: 20px;
+            color: #ff4081;
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(20deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Page 2 styles */
+        .date-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 500px;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: left;
+        }
+        
+        .form-group label {
+            font-weight: bold;
+            color: #d81b60;
+        }
+        
+        .form-group input, .form-group select {
+            padding: 0.8rem;
+            border: 2px solid #f8bbd0;
+            border-radius: 10px;
+            font-size: 1rem;
+            color: #d81b60;
+        }
+        
+        .image-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .image-option {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .image-option img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-option.selected {
+            border-color: #d81b60;
+            box-shadow: 0 4px 8px rgba(216, 27, 96, 0.3);
+        }
+        
+        /* Page 3 styles */
+        .date-card {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .date-image {
+            width: 100%;
+            height: 200px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .date-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .date-details {
+            text-align: left;
+            margin-top: 1rem;
+        }
+        
+        .date-details p {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .date-details strong {
+            color: #d81b60;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f48fb1;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Page 1: Proposal -->
+    <div class="page active" id="page1">
+        <h1>Will You Be My Girlfriend?</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 1rem;">I really like you and would love to be your girlfriend!</p>
+        <div class="buttons">
+            <button class="btn btn-yes" id="yesBtn">Yes, I want!</button>
+            <button class="btn btn-no" id="noBtn">No, leave me alone</button>
+        </div>
+    </div>
+    
+    <!-- Page 2: Date Scheduling -->
+    <div class="page" id="page2">
+        <h1>Let's Plan Our First Date!</h1>
+        <form class="date-form" id="dateForm">
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" id="date" required>
+            </div>
+            <div class="form-group">
+                <label for="time">Time:</label>
+                <input type="time" id="time" required>
+            </div>
+            <div class="form-group">
+                <label>Choose an activity:</label>
+                <div class="image-options">
+                    <div class="image-option" data-value="chatime">
+                        <img src="https://images.unsplash.com/photo-1553905346-3b6e399115b4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Chatime">
+                    </div>
+                    <div class="image-option" data-value="malang">
+                        <img src="https://images.unsplash.com/photo-1566438480900-0609be27a4be?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Malang">
+                    </div>
+                    <div class="image-option" data-value="movie">
+                        <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Movie">
+                    </div>
+                </div>
+                <input type="hidden" id="activity" required>
+            </div>
+            <button type="submit" class="btn btn-yes" style="margin-top: 1rem;">Continue</button>
+        </form>
+    </div>
+    
+    <!-- Page 3: Date Confirmation -->
+    <div class="page" id="page3">
+        <h1>Our Date is Scheduled!</h1>
+        <div class="date-card">
+            <p style="font-size: 1.2rem; margin-bottom: 1rem;">I'm so excited for our date! Here are the details:</p>
+            <div class="date-image">
+                <img id="confirmImage" src="" alt="Date Activity">
+            </div>
+            <div class="date-details">
+                <p><strong>Date:</strong> <span id="confirmDate"></span></p>
+                <p><strong>Time:</strong> <span id="confirmTime"></span></p>
+                <p><strong>Activity:</strong> <span id="confirmActivity"></span></p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Heart cursor animation
+        document.addEventListener('mousemove', function(e) {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = (e.pageX - 10) + 'px';
+            heart.style.top = (e.pageY - 10) + 'px';
+            document.body.appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, 2000);
+        });
+        
+        // Page 1 functionality
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const pages = document.querySelectorAll('.page');
+        
+        yesBtn.addEventListener('click', () => {
+            showPage(2);
+            createConfetti();
+        });
+        
+        noBtn.addEventListener('mouseover', () => {
+            // Randomly move the "No" button or hide it
+            const actions = ['move', 'hide', 'nothing'];
+            const action = actions[Math.floor(Math.random() * actions.length)];
+            
+            if (action === 'move') {
+                const x = Math.random() * (window.innerWidth - 200);
+                const y = Math.random() * (window.innerHeight - 100);
+                noBtn.style.position = 'absolute';
+                noBtn.style.left = x + 'px';
+                noBtn.style.top = y + 'px';
+            } else if (action === 'hide') {
+                noBtn.style.visibility = 'hidden';
+                setTimeout(() => {
+                    noBtn.style.visibility = 'visible';
+                    const x = Math.random() * (window.innerWidth - 200);
+                    const y = Math.random() * (window.innerHeight - 100);
+                    noBtn.style.position = 'absolute';
+                    noBtn.style.left = x + 'px';
+                    noBtn.style.top = y + 'px';
+                }, 500);
+            }
+        });
+        
+        // Page 2 functionality
+        const dateForm = document.getElementById('dateForm');
+        const imageOptions = document.querySelectorAll('.image-option');
+        const activityInput = document.getElementById('activity');
+        
+        imageOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                imageOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                activityInput.value = option.getAttribute('data-value');
+            });
+        });
+        
+        dateForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (!activityInput.value) {
+                alert('Please select an activity!');
+                return;
+            }
+            
+            // Store date details
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            const activity = activityInput.value;
+            
+            // Set confirmation page details
+            document.getElementById('confirmDate').textContent = formatDate(date);
+            document.getElementById('confirmTime').textContent = formatTime(time);
+            
+            let activityText = '';
+            let imageUrl = '';
+            
+            switch(activity) {
+                case 'chatime':
+                    activityText = 'Chatime Drink';
+                    imageUrl = 'https://images.unsplash.com/photo-1553905346-3b6e399115b4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60';
+                    break;
+                case 'malang':
+                    activityText = 'Visit Malang City';
+                    imageUrl = 'https://images.unsplash.com/photo-1566438480900-0609be27a4be?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60';
+                    break;
+                case 'movie':
+                    activityText = 'Watch a Movie';
+                    imageUrl = 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60';
+                    break;
+            }
+            
+            document.getElementById('confirmActivity').textContent = activityText;
+            document.getElementById('confirmImage').src = imageUrl;
+            
+            showPage(3);
+            createConfetti();
+        });
+        
+        // Helper functions
+        function showPage(pageNumber) {
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(`page${pageNumber}`).classList.add('active');
+        }
+        
+        function formatDate(dateString) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+        
+        function formatTime(timeString) {
+            const [hours, minutes] = timeString.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${displayHour}:${minutes} ${ampm}`;
+        }
+        
+        function createConfetti() {
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 60 + 320}, 100%, 70%)`;
+                confetti.style.opacity = Math.random();
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                document.body.appendChild(confetti);
+                
+                const animationDuration = Math.random() * 3 + 2;
+                confetti.style.animation = `float ${animationDuration}s ease-in forwards`;
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, animationDuration * 1000);
+            }
+        }
+    </script>
+</body>
+</html>
